@@ -1,0 +1,54 @@
+<%- include('./partials/head') %>
+<%- include('./partials/shell-start') %>
+
+<h1>Comments</h1>
+<% if (notice) { %>
+  <p class="form-banner" role="status"><%= notice %></p>
+<% } %>
+
+<nav class="filter-row" aria-label="Filter comments">
+  <% statuses.forEach(function (s) { %>
+    <a class="<%= status === s ? 'is-active' : '' %>" href="/admin/comments?status=<%= s %>"><%= s %></a>
+  <% }) %>
+</nav>
+
+<% if (comments.length) { %>
+  <ul class="comment-mod">
+    <% comments.forEach(function (c) { %>
+      <li>
+        <p><strong><%= c.name %></strong> · <%= c.email %> · <%= formatDate(c.createdAt) %></p>
+        <p><%= c.body %></p>
+        <p class="muted">
+          On
+          <% if (c.post) { %>
+            <a href="/article/<%= c.post.slug %>"><%= c.post.title %></a>
+          <% } else { %>
+            a deleted post
+          <% } %>
+        </p>
+        <div class="row-actions">
+          <form method="post" action="/admin/comments/<%= c._id %>/status">
+            <input type="hidden" name="status" value="approved">
+            <button class="btn" type="submit">Approve</button>
+          </form>
+          <form method="post" action="/admin/comments/<%= c._id %>/status">
+            <input type="hidden" name="status" value="spam">
+            <button class="btn" type="submit">Spam</button>
+          </form>
+          <form method="post" action="/admin/comments/<%= c._id %>/status">
+            <input type="hidden" name="status" value="pending">
+            <button class="btn" type="submit">Pending</button>
+          </form>
+          <form method="post" action="/admin/comments/<%= c._id %>/delete" onsubmit="return confirm('Delete this comment?');">
+            <button class="linkish" type="submit">Delete</button>
+          </form>
+        </div>
+      </li>
+    <% }) %>
+  </ul>
+  <%- include('../partials/pager') %>
+<% } else { %>
+  <p class="empty">No comments in this filter.</p>
+<% } %>
+
+<%- include('./partials/shell-end') %>

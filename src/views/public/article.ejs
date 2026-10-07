@@ -1,0 +1,120 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="main" class="article-page">
+  <article class="article">
+    <header class="article-hero container">
+      <p class="kicker"><a href="/category/<%= post.category.slug %>"><%= post.category.name %></a></p>
+      <h1><%= post.title %></h1>
+      <p class="lede"><%= post.excerpt %></p>
+      <p class="meta">
+        <a href="/authors/<%= post.author.slug %>"><%= post.author.name %></a>
+        <span aria-hidden="true">·</span>
+        <time datetime="<%= isoDate(post.publishedAt) %>"><%= formatDate(post.publishedAt) %></time>
+        <span aria-hidden="true">·</span>
+        <%= post.readTimeMinutes %> min read
+        <span aria-hidden="true">·</span>
+        <%= post.views + 1 %> views
+      </p>
+    </header>
+
+    <% if (post.coverImage) { %>
+      <figure class="article-cover container">
+        <img src="<%= post.coverImage %>" alt="" width="1400" height="788">
+      </figure>
+    <% } %>
+
+    <div class="container article-layout">
+      <aside class="article-rail">
+        <% if (toc.length) { %>
+          <nav class="toc" aria-label="Table of contents">
+            <p class="toc-title">In this story</p>
+            <ol>
+              <% toc.forEach(function (item) { %>
+                <li class="toc-h<%= item.level %>"><a href="#<%= item.id %>"><%= item.text %></a></li>
+              <% }) %>
+            </ol>
+          </nav>
+        <% } %>
+        <div class="share" aria-label="Share this story">
+          <p class="toc-title">Share</p>
+          <ul>
+            <li><a href="https://twitter.com/intent/tweet?url=<%= shareUrl %>&text=<%= shareText %>" rel="noopener noreferrer" target="_blank">X / Twitter</a></li>
+            <li><a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= shareUrl %>" rel="noopener noreferrer" target="_blank">LinkedIn</a></li>
+            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<%= shareUrl %>" rel="noopener noreferrer" target="_blank">Facebook</a></li>
+            <li><button type="button" data-copy-link>Copy link</button></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="article-body prose">
+        <%- html %>
+      </div>
+    </div>
+  </article>
+
+  <% if (related.length) { %>
+    <section class="container related" aria-labelledby="related-heading">
+      <h2 id="related-heading">Related</h2>
+      <div class="card-grid card-grid-3">
+        <% related.forEach(function (post) { %>
+          <%- include('../partials/post-card', { post: post }) %>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="container comments" id="comments" aria-labelledby="comments-heading">
+    <h2 id="comments-heading">Comments (<%= comments.length %>)</h2>
+
+    <% if (commentStatus === 'pending') { %>
+      <p class="form-banner is-ok" role="status">Thanks — your comment is waiting for review. It will show up once an editor approves it.</p>
+    <% } else if (commentStatus === 'invalid') { %>
+      <p class="form-banner is-error" role="alert">Please check your name, email, and a comment of at least 8 characters.</p>
+    <% } else if (commentStatus === 'closed') { %>
+      <p class="form-banner" role="status">Comments are closed on this story.</p>
+    <% } %>
+
+    <% if (post.allowComments) { %>
+      <form class="comment-form" action="/article/<%= post.slug %>/comments" method="post" data-comment-form>
+        <p class="hp-field" aria-hidden="true">
+          <label for="comment-website">Website</label>
+          <input id="comment-website" name="website" tabindex="-1" autocomplete="off">
+        </p>
+        <div class="comment-fields">
+          <div class="field">
+            <label for="comment-name">Name</label>
+            <input id="comment-name" name="name" required minlength="2" maxlength="80" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="comment-email">Email</label>
+            <input id="comment-email" name="email" type="email" required autocomplete="email">
+          </div>
+        </div>
+        <div class="field">
+          <label for="comment-body">Comment</label>
+          <textarea id="comment-body" name="body" rows="5" required minlength="8" maxlength="2000"></textarea>
+        </div>
+        <p class="hint">HTML is stripped. Comments are held for approval — this keeps spam off the page.</p>
+        <button class="btn" type="submit">Post comment</button>
+      </form>
+    <% } else { %>
+      <p class="muted">Comments are turned off for this story.</p>
+    <% } %>
+
+    <% if (comments.length) { %>
+      <ul class="comment-list">
+        <% comments.forEach(function (comment) { %>
+          <li>
+            <p class="comment-meta"><strong><%= comment.name %></strong> · <time datetime="<%= isoDate(comment.createdAt) %>"><%= formatDate(comment.createdAt) %></time></p>
+            <p><%= comment.body %></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="muted">No public comments yet.</p>
+    <% } %>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

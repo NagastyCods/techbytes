@@ -1,0 +1,17 @@
+<section class="newsletter" aria-labelledby="newsletter-heading">
+  <div class="newsletter-copy">
+    <h2 id="newsletter-heading">The Byte Briefing</h2>
+    <p>One email, a handful of stories that actually matter. No growth-hack subject lines.</p>
+  </div>
+  <form class="newsletter-form" action="/newsletter" method="post" data-newsletter-form>
+    <input type="hidden" name="redirect" value="<%= canonicalPath %>">
+    <label class="sr-only" for="newsletter-email">Email address</label>
+    <input id="newsletter-email" type="email" name="email" required autocomplete="email" placeholder="you@company.com">
+    <button type="submit" class="btn btn-accent">Subscribe</button>
+  </form>
+  <p class="form-status" data-newsletter-status role="status" <%= newsletterStatus ? '' : 'hidden' %>>
+    <% if (newsletterStatus === 'ok') { %>You’re on the list. Welcome aboard.<% } %>
+    <% if (newsletterStatus === 'exists') { %>That email is already subscribed.<% } %>
+    <% if (newsletterStatus === 'invalid') { %>Please enter a valid email address.<% } %>
+  </p>
+</section>

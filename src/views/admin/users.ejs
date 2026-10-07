@@ -1,0 +1,62 @@
+<%- include('./partials/head') %>
+<%- include('./partials/shell-start') %>
+
+<h1>Users</h1>
+<p class="muted">Admins only. Roles: admin (everything), editor (all content except users), author (own posts).</p>
+<% if (notice) { %>
+  <p class="form-banner" role="status"><%= notice %></p>
+<% } %>
+
+<section class="meta-box">
+  <h2><%= editing ? 'Edit user' : 'Invite staff' %></h2>
+  <form method="post" action="<%= editing ? '/admin/users/' + editing._id : '/admin/users' %>" class="user-form">
+    <label for="name">Name</label>
+    <input id="name" name="name" required value="<%= editing ? editing.name : '' %>">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" required value="<%= editing ? editing.email : '' %>">
+    <label for="password">Password <%= editing ? '(leave blank to keep)' : '' %></label>
+    <input id="password" name="password" type="password" <%= editing ? '' : 'required minlength="8"' %> minlength="8" autocomplete="new-password">
+    <label for="role">Role</label>
+    <select id="role" name="role">
+      <% roles.forEach(function (r) { %>
+        <option value="<%= r %>" <%= editing && editing.role === r ? 'selected' : '' %>><%= r %></option>
+      <% }) %>
+    </select>
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="3"><%= editing ? editing.bio : '' %></textarea>
+    <label for="avatar">Avatar URL</label>
+    <input id="avatar" name="avatar" value="<%= editing ? editing.avatar : '' %>">
+    <% if (editing) { %>
+      <label class="check"><input type="checkbox" name="isActive" <%= editing.isActive ? 'checked' : '' %>> Active</label>
+      <input type="hidden" name="slug" value="<%= editing.slug %>">
+    <% } %>
+    <button class="btn btn-accent" type="submit"><%= editing ? 'Save user' : 'Create user' %></button>
+    <% if (editing) { %>
+      <a href="/admin/users">Cancel</a>
+    <% } %>
+  </form>
+</section>
+
+<table class="data-table">
+  <thead>
+    <tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% users.forEach(function (u) { %>
+      <tr>
+        <td><a href="/authors/<%= u.slug %>"><%= u.name %></a></td>
+        <td><%= u.email %></td>
+        <td><span class="pill"><%= u.role %></span></td>
+        <td><%= u.isActive ? 'Yes' : 'No' %></td>
+        <td class="row-actions">
+          <a href="/admin/users/<%= u._id %>/edit">Edit</a>
+          <form action="/admin/users/<%= u._id %>/delete" method="post" onsubmit="return confirm('Delete this user?');">
+            <button class="linkish" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('./partials/shell-end') %>

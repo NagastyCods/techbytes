@@ -1,0 +1,23 @@
+<%- include('./partials/head') %>
+<main class="login-wrap">
+  <section class="login-card">
+    <p class="kicker">Staff</p>
+    <h1>Sign in to <%= siteName %></h1>
+    <p class="muted">JWT goes in an httpOnly cookie — the browser stores it, page JavaScript cannot read it.</p>
+    <% if (error) { %>
+      <p class="form-banner is-error" role="alert"><%= error %></p>
+    <% } %>
+    <form action="/admin/login" method="post">
+      <input type="hidden" name="next" value="<%= next %>">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="btn btn-accent" type="submit">Log in</button>
+    </form>
+    <p class="muted"><a href="/">← Back to the site</a></p>
+  </section>
+</main>
+<script src="/js/theme.js" defer></script>
+</body>
+</html>

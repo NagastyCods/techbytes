@@ -1,0 +1,48 @@
+<%- include('./partials/head') %>
+<%- include('./partials/shell-start') %>
+
+<h1>Dashboard</h1>
+<p class="muted">A snapshot of what’s live, waiting, and being read.</p>
+
+<ul class="stat-grid">
+  <li><strong><%= stats.publishedCount %></strong><span>Published</span></li>
+  <li><strong><%= stats.draftCount %></strong><span>Drafts</span></li>
+  <li><strong><%= stats.scheduledCount %></strong><span>Scheduled</span></li>
+  <li><strong><%= stats.subscriberCount %></strong><span>Subscribers</span></li>
+  <li><strong><%= stats.pendingComments %></strong><span>Comments to review</span></li>
+</ul>
+
+<div class="admin-split">
+  <section>
+    <h2>Top posts by views</h2>
+    <% if (topPosts.length) { %>
+      <table class="data-table">
+        <thead><tr><th>Title</th><th>Views</th><th>Status</th></tr></thead>
+        <tbody>
+          <% topPosts.forEach(function (post) { %>
+            <tr>
+              <td><a href="/admin/posts/<%= post._id %>/edit"><%= post.title %></a></td>
+              <td><%= post.views %></td>
+              <td><span class="pill"><%= post.status %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="empty">No posts yet.</p>
+    <% } %>
+  </section>
+  <section>
+    <h2>Recently updated</h2>
+    <ul class="plain-list">
+      <% recentPosts.forEach(function (post) { %>
+        <li>
+          <a href="/admin/posts/<%= post._id %>/edit"><%= post.title %></a>
+          <span class="muted"><%= formatDate(post.updatedAt) %></span>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+</div>
+
+<%- include('./partials/shell-end') %>

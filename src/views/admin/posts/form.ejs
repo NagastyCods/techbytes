@@ -1,0 +1,117 @@
+<%- include('../partials/head') %>
+<%- include('../partials/shell-start') %>
+
+<div class="toolbar">
+  <h1><%= post._id ? 'Edit post' : 'New post' %></h1>
+  <% if (post._id && post.status === 'published') { %>
+    <a href="/article/<%= post.slug %>" target="_blank" rel="noopener">Open live</a>
+  <% } %>
+</div>
+<% if (notice) { %>
+  <p class="form-banner is-ok" role="status"><%= notice %></p>
+<% } %>
+
+<form class="post-form" method="post" action="<%= post._id ? '/admin/posts/' + post._id : '/admin/posts' %>" data-editor-form>
+  <div class="post-form-grid">
+    <div class="editor-col">
+      <label for="title">Title</label>
+      <input id="title" name="title" required maxlength="180" value="<%= post.title %>" data-slug-source>
+
+      <label for="slug">Slug</label>
+      <input id="slug" name="slug" value="<%= post.slug %>" data-slug-target>
+      <p class="hint">URL piece: /article/your-slug. Leave blank on a new post to generate from the title.</p>
+
+      <label for="excerpt">Excerpt</label>
+      <textarea id="excerpt" name="excerpt" rows="3" maxlength="400"><%= post.excerpt %></textarea>
+
+      <div class="editor-toolbar">
+        <label class="btn" for="inline-image">Upload image</label>
+        <input id="inline-image" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-inline-upload>
+        <span class="hint">Inserts Markdown at the cursor. Files stay in /public/uploads (swap for Cloudinary later).</span>
+      </div>
+      <label for="content">Markdown</label>
+      <textarea id="content" name="content" rows="22" required data-markdown><%= post.content %></textarea>
+    </div>
+
+    <aside class="preview-col">
+      <p class="kicker">Live preview</p>
+      <div class="prose preview-pane" data-preview>
+        <p class="muted">Start typing to see rendered HTML.</p>
+      </div>
+    </aside>
+  </div>
+
+  <fieldset class="meta-box">
+    <legend>Publishing</legend>
+    <label for="status">Status</label>
+    <select id="status" name="status" data-status>
+      <% statuses.forEach(function (s) { %>
+        <option value="<%= s %>" <%= post.status === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+    <label for="scheduledAt">Schedule for</label>
+    <input id="scheduledAt" name="scheduledAt" type="datetime-local" value="<%= scheduledLocal %>" data-schedule>
+    <p class="hint">Used when status is “scheduled”. If the time is already past, it publishes immediately.</p>
+
+    <label for="author">Author</label>
+    <select id="author" name="author" <%= currentUser.role === 'author' ? 'disabled' : '' %>>
+      <% authors.forEach(function (a) { %>
+        <option value="<%= a._id %>" <%= String(post.author && (post.author._id || post.author)) === String(a._id) ? 'selected' : '' %>><%= a.name %></option>
+      <% }) %>
+    </select>
+    <% if (currentUser.role === 'author') { %>
+      <input type="hidden" name="author" value="<%= currentUser._id %>">
+    <% } %>
+
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c._id %>" <%= String(post.category && (post.category._id || post.category)) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+
+    <fieldset class="check-grid">
+      <legend>Tags</legend>
+      <% tags.forEach(function (t) { %>
+        <label class="check">
+          <input type="checkbox" name="tags" value="<%= t._id %>" <%= selectedTagIds.indexOf(String(t._id)) !== -1 ? 'checked' : '' %>>
+          <%= t.name %>
+        </label>
+      <% }) %>
+    </fieldset>
+
+    <label for="coverImage">Cover image URL</label>
+    <div class="inline-file">
+      <input id="coverImage" name="coverImage" value="<%= post.coverImage %>">
+      <label class="btn" for="cover-file">Upload</label>
+      <input id="cover-file" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-cover-upload>
+    </div>
+    <p class="hint">Paste an Unsplash URL or upload to this server.</p>
+
+    <label class="check">
+      <input type="checkbox" name="featured" <%= post.featured ? 'checked' : '' %>> Featured on homepage
+    </label>
+    <label class="check">
+      <input type="checkbox" name="allowComments" <%= post.allowComments ? 'checked' : '' %>> Allow comments
+    </label>
+  </fieldset>
+
+  <fieldset class="meta-box">
+    <legend>SEO</legend>
+    <label for="metaTitle">Meta title</label>
+    <input id="metaTitle" name="metaTitle" maxlength="70" value="<%= post.seo && post.seo.metaTitle ? post.seo.metaTitle : '' %>">
+    <label for="metaDescription">Meta description</label>
+    <textarea id="metaDescription" name="metaDescription" rows="2" maxlength="160"><%= post.seo && post.seo.metaDescription ? post.seo.metaDescription : '' %></textarea>
+    <label for="ogImage">Open Graph image URL</label>
+    <input id="ogImage" name="ogImage" value="<%= post.seo && post.seo.ogImage ? post.seo.ogImage : '' %>">
+    <label for="canonicalUrl">Canonical URL</label>
+    <input id="canonicalUrl" name="canonicalUrl" value="<%= post.seo && post.seo.canonicalUrl ? post.seo.canonicalUrl : '' %>">
+  </fieldset>
+
+  <div class="toolbar">
+    <button class="btn btn-accent" type="submit">Save</button>
+    <a href="/admin/posts">Cancel</a>
+  </div>
+</form>
+
+<%- include('../partials/shell-end', { extraScript: '/js/admin-editor.js' }) %>

@@ -1,0 +1,27 @@
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <a class="logo admin-logo" href="/admin"><span class="logo-mark" aria-hidden="true">⌁</span> <%= siteName %></a>
+      <p class="admin-who"><%= currentUser.name %> · <%= currentUser.role %></p>
+      <nav aria-label="Admin">
+        <a href="/admin" class="<%= currentPath === '/admin' ? 'is-active' : '' %>">Dashboard</a>
+        <a href="/admin/posts" class="<%= currentPath.indexOf('/admin/posts') === 0 ? 'is-active' : '' %>">Posts</a>
+        <a href="/admin/posts/new">New post</a>
+        <% if (canManageTaxonomy) { %>
+          <a href="/admin/categories" class="<%= currentPath.indexOf('/admin/categories') === 0 ? 'is-active' : '' %>">Categories</a>
+          <a href="/admin/tags" class="<%= currentPath.indexOf('/admin/tags') === 0 ? 'is-active' : '' %>">Tags</a>
+        <% } %>
+        <% if (canManageComments) { %>
+          <a href="/admin/comments" class="<%= currentPath.indexOf('/admin/comments') === 0 ? 'is-active' : '' %>">Comments</a>
+        <% } %>
+        <% if (canManageUsers) { %>
+          <a href="/admin/users" class="<%= currentPath.indexOf('/admin/users') === 0 ? 'is-active' : '' %>">Users</a>
+        <% } %>
+        <a href="/" target="_blank" rel="noopener">View site</a>
+      </nav>
+      <form action="/admin/logout" method="post">
+        <button class="btn btn-ghost" type="submit">Log out</button>
+      </form>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">☀ / ☾</button>
+    </aside>
+    <div class="admin-main-wrap">
+      <main id="admin-main" class="admin-main">

@@ -1,0 +1,45 @@
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/" aria-label="<%= siteName %> home">
+        <span class="logo-mark" aria-hidden="true">⌁</span>
+        <span class="logo-text"><%= siteName %></span>
+      </a>
+
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <ul class="nav-list">
+          <% categories.forEach(function (cat) { %>
+            <li>
+              <a class="<%= currentPath === '/category/' + cat.slug ? 'is-active' : '' %>" href="/category/<%= cat.slug %>"><%= cat.name %></a>
+            </li>
+          <% }) %>
+        </ul>
+      </nav>
+
+      <div class="header-search-wrap">
+        <form class="header-search" action="/search" method="get" role="search" data-live-search="header">
+          <label class="sr-only" for="header-q">Search articles</label>
+          <input id="header-q" type="search" name="q" placeholder="Search news…" value="<%= typeof q !== 'undefined' ? q : '' %>" autocomplete="off" aria-autocomplete="list" aria-controls="header-search-results">
+          <button type="submit" class="icon-btn" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3-3"></path></svg>
+          </button>
+        </form>
+        <div id="header-search-results" class="live-search" hidden role="listbox" aria-label="Live search results"></div>
+      </div>
+
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+        <span class="theme-toggle-sun" aria-hidden="true">☀</span>
+        <span class="theme-toggle-moon" aria-hidden="true">☾</span>
+      </button>
+
+      <% if (currentUser) { %>
+        <a class="staff-link" href="/admin">Dashboard</a>
+      <% } else { %>
+        <a class="staff-link" href="/admin/login">Staff</a>
+      <% } %>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+        <span class="sr-only">Menu</span>
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>

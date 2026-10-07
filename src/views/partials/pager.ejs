@@ -1,0 +1,25 @@
+<% if (pager && pager.pageCount > 1) { %>
+  <nav class="pager" aria-label="Pagination">
+    <% if (pager.hasPrev) { %>
+      <a href="<%= pager.prevHref %>">Previous</a>
+    <% } else { %>
+      <span class="is-disabled">Previous</span>
+    <% } %>
+    <ol>
+      <% pager.pages.forEach(function (item) { %>
+        <li>
+          <% if (item.current) { %>
+            <span aria-current="page"><%= item.number %></span>
+          <% } else { %>
+            <a href="<%= item.href %>"><%= item.number %></a>
+          <% } %>
+        </li>
+      <% }) %>
+    </ol>
+    <% if (pager.hasNext) { %>
+      <a href="<%= pager.nextHref %>">Next</a>
+    <% } else { %>
+      <span class="is-disabled">Next</span>
+    <% } %>
+  </nav>
+<% } %>

@@ -1,0 +1,59 @@
+<%- include('../partials/head') %>
+<%- include('../partials/shell-start') %>
+
+<div class="toolbar">
+  <h1>Posts</h1>
+  <a class="btn btn-accent" href="/admin/posts/new">New post</a>
+</div>
+
+<% if (typeof notice !== 'undefined' && notice) { %>
+  <p class="form-banner" role="status"><%= notice %></p>
+<% } %>
+
+<nav class="filter-row" aria-label="Filter by status">
+  <a class="<%= !status ? 'is-active' : '' %>" href="/admin/posts">All</a>
+  <% statuses.forEach(function (s) { %>
+    <a class="<%= status === s ? 'is-active' : '' %>" href="/admin/posts?status=<%= s %>"><%= s %></a>
+  <% }) %>
+</nav>
+
+<% if (posts.length) { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Status</th>
+        <th>Views</th>
+        <th>Updated</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% posts.forEach(function (post) { %>
+        <tr>
+          <td>
+            <a href="/admin/posts/<%= post._id %>/edit"><%= post.title %></a>
+            <% if (post.status === 'published') { %>
+              <div><a class="muted" href="/article/<%= post.slug %>" target="_blank" rel="noopener">View</a></div>
+            <% } %>
+          </td>
+          <td><%= post.author ? post.author.name : '—' %></td>
+          <td><span class="pill"><%= post.status %></span></td>
+          <td><%= post.views %></td>
+          <td><%= formatDate(post.updatedAt) %></td>
+          <td>
+            <form action="/admin/posts/<%= post._id %>/delete" method="post" onsubmit="return confirm('Delete this post?');">
+              <button class="linkish" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <%- include('../../partials/pager') %>
+<% } else { %>
+  <p class="empty">No posts in this filter. <a href="/admin/posts/new">Write one</a>.</p>
+<% } %>
+
+<%- include('../partials/shell-end') %>

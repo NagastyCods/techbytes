@@ -1,0 +1,27 @@
+<article class="card <%= typeof featured !== 'undefined' && featured ? 'card-featured' : '' %>">
+  <a class="card-media" href="/article/<%= post.slug %>">
+    <% if (post.coverImage) { %>
+      <img src="<%= post.coverImage %>" alt="" loading="<%= typeof eager !== 'undefined' && eager ? 'eager' : 'lazy' %>" width="800" height="500">
+    <% } else { %>
+      <div class="card-fallback" aria-hidden="true"></div>
+    <% } %>
+  </a>
+  <div class="card-body">
+    <% if (post.category) { %>
+      <a class="kicker" href="/category/<%= post.category.slug %>"><%= post.category.name %></a>
+    <% } %>
+    <h3 class="card-title"><a href="/article/<%= post.slug %>"><%= post.title %></a></h3>
+    <% if (post.excerpt) { %>
+      <p class="card-excerpt"><%= post.excerpt %></p>
+    <% } %>
+    <p class="meta">
+      <% if (post.author) { %>
+        <a href="/authors/<%= post.author.slug %>"><%= post.author.name %></a>
+        <span aria-hidden="true">·</span>
+      <% } %>
+      <time datetime="<%= isoDate(post.publishedAt) %>"><%= formatDate(post.publishedAt) %></time>
+      <span aria-hidden="true">·</span>
+      <%= post.readTimeMinutes %> min read
+    </p>
+  </div>
+</article>

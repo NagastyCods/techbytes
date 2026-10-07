@@ -1,0 +1,25 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="main" class="container listing-page">
+  <header class="page-header">
+    <p class="kicker"><%= kicker %></p>
+    <h1><%= heading %></h1>
+    <% if (intro) { %>
+      <p class="lede"><%= intro %></p>
+    <% } %>
+  </header>
+
+  <% if (posts.length) { %>
+    <div class="card-grid">
+      <% posts.forEach(function (post) { %>
+        <%- include('../partials/post-card', { post: post }) %>
+      <% }) %>
+    </div>
+    <%- include('../partials/pager') %>
+  <% } else { %>
+    <p class="empty"><%= emptyMessage %></p>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

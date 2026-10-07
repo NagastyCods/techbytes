@@ -1,0 +1,30 @@
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="logo footer-logo"><span class="logo-mark" aria-hidden="true">⌁</span> <%= siteName %></p>
+        <p class="muted"><%= siteTagline %></p>
+      </div>
+      <nav aria-label="Footer">
+        <p class="footer-heading">Sections</p>
+        <ul class="footer-links">
+          <% categories.forEach(function (cat) { %>
+            <li><a href="/category/<%= cat.slug %>"><%= cat.name %></a></li>
+          <% }) %>
+        </ul>
+      </nav>
+      <div>
+        <p class="footer-heading">Stay in the loop</p>
+        <p class="muted">A short briefing, not an inbox avalanche.</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <%= new Date().getFullYear() %> <%= siteName %>. Built for readers first.</p>
+    </div>
+  </footer>
+  <script src="/js/theme.js" defer></script>
+  <script src="/js/main.js" defer></script>
+  <script src="/js/search.js" defer></script>
+  <script src="/js/comments.js" defer></script>
+  <script src="/js/newsletter.js" defer></script>
+</body>
+</html>

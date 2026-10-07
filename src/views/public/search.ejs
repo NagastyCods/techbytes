@@ -1,0 +1,52 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="main" class="container listing-page">
+  <header class="page-header">
+    <p class="kicker">Search</p>
+    <h1>Find a story</h1>
+    <p class="lede">Type to search live, or submit the form — it still works with JavaScript off. Filter by section and date anytime.</p>
+  </header>
+
+  <form class="search-panel" action="/search" method="get" data-live-search="page">
+    <div class="field">
+      <label for="search-q">Keywords</label>
+      <input id="search-q" type="search" name="q" value="<%= q %>" placeholder="AI, chips, ransomware…" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="search-category">Category</label>
+      <select id="search-category" name="category">
+        <option value="">All sections</option>
+        <% categories.forEach(function (cat) { %>
+          <option value="<%= cat._id %>" <%= String(selectedCategory) === String(cat._id) ? 'selected' : '' %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="field">
+      <label for="search-from">From</label>
+      <input id="search-from" type="date" name="from" value="<%= from %>">
+    </div>
+    <div class="field">
+      <label for="search-to">To</label>
+      <input id="search-to" type="date" name="to" value="<%= to %>">
+    </div>
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  <p class="muted" data-search-count <%= ran ? '' : 'hidden' %>><%= total %> result<%= total === 1 ? '' : 's' %><% if (q) { %> for “<%= q %>”<% } %></p>
+
+  <div data-search-results>
+    <% if (posts.length) { %>
+      <div class="card-grid">
+        <% posts.forEach(function (post) { %>
+          <%- include('../partials/post-card', { post: post }) %>
+        <% }) %>
+      </div>
+      <%- include('../partials/pager') %>
+    <% } else if (ran) { %>
+      <p class="empty">No published stories matched those filters.</p>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

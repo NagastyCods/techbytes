@@ -1,0 +1,42 @@
+<%- include('./partials/head') %>
+<%- include('./partials/shell-start') %>
+
+<h1><%= heading %></h1>
+<% if (notice) { %>
+  <p class="form-banner" role="status"><%= notice %></p>
+<% } %>
+
+<form class="inline-create" method="post" action="/admin/<%= kind %>">
+  <label class="sr-only" for="new-name">Name</label>
+  <input id="new-name" name="name" required placeholder="Name">
+  <% if (kind === 'categories') { %>
+    <input name="description" placeholder="Short description">
+    <input name="accentColor" type="color" value="#2563eb" aria-label="Accent color">
+  <% } %>
+  <button class="btn btn-accent" type="submit">Add</button>
+</form>
+
+<% if (items.length) { %>
+  <ul class="tax-list">
+    <% items.forEach(function (item) { %>
+      <li>
+        <form method="post" action="/admin/<%= kind %>/<%= item._id %>" class="tax-row">
+          <input name="name" value="<%= item.name %>" required>
+          <input name="slug" value="<%= item.slug %>">
+          <% if (kind === 'categories') { %>
+            <input name="description" value="<%= item.description || '' %>">
+            <input name="accentColor" type="color" value="<%= item.accentColor || '#2563eb' %>" aria-label="Accent">
+          <% } %>
+          <button class="btn" type="submit">Save</button>
+        </form>
+        <form method="post" action="/admin/<%= kind %>/<%= item._id %>/delete" onsubmit="return confirm('Delete <%= item.name %>?');">
+          <button class="linkish" type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p class="empty">Nothing here yet.</p>
+<% } %>
+
+<%- include('./partials/shell-end') %>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= metaDescription %>">
+  <meta name="robots" content="<%= robots %>">
+  <% const canonical = canonicalUrl || (siteUrl + canonicalPath); %>
+  <link rel="canonical" href="<%= canonical %>">
+  <link rel="alternate" type="application/rss+xml" title="<%= siteName %> RSS" href="<%= rssUrl %>">
+  <meta property="og:site_name" content="<%= siteName %>">
+  <meta property="og:title" content="<%= pageTitle %>">
+  <meta property="og:description" content="<%= metaDescription %>">
+  <meta property="og:type" content="<%= typeof post !== 'undefined' ? 'article' : 'website' %>">
+  <meta property="og:url" content="<%= canonical %>">
+  <% if (ogImage) { %>
+  <meta property="og:image" content="<%= ogImage %>">
+  <meta name="twitter:image" content="<%= ogImage %>">
+  <% } %>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= pageTitle %>">
+  <meta name="twitter:description" content="<%= metaDescription %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('tb-theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <% if (typeof jsonLd !== 'undefined') { %>
+  <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
+  <% } %>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>

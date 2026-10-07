@@ -1,0 +1,88 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="main">
+  <% if (hero) { %>
+    <section class="hero">
+      <div class="container hero-grid">
+        <a class="hero-media" href="/article/<%= hero.slug %>">
+          <% if (hero.coverImage) { %>
+            <img src="<%= hero.coverImage %>" alt="" width="1200" height="750">
+          <% } %>
+        </a>
+        <div class="hero-copy">
+          <p class="kicker">Featured</p>
+          <% if (hero.category) { %>
+            <a class="kicker kicker-ghost" href="/category/<%= hero.category.slug %>"><%= hero.category.name %></a>
+          <% } %>
+          <h1><a href="/article/<%= hero.slug %>"><%= hero.title %></a></h1>
+          <p class="lede"><%= hero.excerpt %></p>
+          <p class="meta">
+            <a href="/authors/<%= hero.author.slug %>"><%= hero.author.name %></a>
+            <span aria-hidden="true">·</span>
+            <time datetime="<%= isoDate(hero.publishedAt) %>"><%= formatDate(hero.publishedAt) %></time>
+            <span aria-hidden="true">·</span>
+            <%= hero.readTimeMinutes %> min read
+          </p>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <div class="container home-layout">
+    <section aria-labelledby="latest-heading">
+      <div class="section-head">
+        <h2 id="latest-heading">Latest</h2>
+        <a class="text-link" href="/search">Browse all</a>
+      </div>
+      <% if (latest.length) { %>
+        <div class="card-grid">
+          <% latest.forEach(function (post) { %>
+            <%- include('../partials/post-card', { post: post }) %>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="empty">No stories yet. Run <code>npm run seed</code> after MongoDB is connected.</p>
+      <% } %>
+    </section>
+
+    <aside class="trending" aria-labelledby="trending-heading">
+      <h2 id="trending-heading">Trending</h2>
+      <ol class="trending-list">
+        <% trending.forEach(function (post, i) { %>
+          <li>
+            <span class="trending-index" aria-hidden="true"><%= String(i + 1).padStart(2, '0') %></span>
+            <div>
+              <% if (post.category) { %>
+                <a class="kicker" href="/category/<%= post.category.slug %>"><%= post.category.name %></a>
+              <% } %>
+              <a class="trending-title" href="/article/<%= post.slug %>"><%= post.title %></a>
+            </div>
+          </li>
+        <% }) %>
+      </ol>
+    </aside>
+  </div>
+
+  <% categorySections.forEach(function (section) { %>
+    <section class="category-band" aria-labelledby="cat-<%= section.category.slug %>">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="cat-<%= section.category.slug %>"><%= section.category.name %></h2>
+          <a class="text-link" href="/category/<%= section.category.slug %>">See all</a>
+        </div>
+        <div class="card-grid card-grid-4">
+          <% section.posts.forEach(function (post) { %>
+            <%- include('../partials/post-card', { post: post }) %>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% }) %>
+
+  <div class="container">
+    <%- include('../partials/newsletter') %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
