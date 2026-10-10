@@ -40,7 +40,7 @@ async function seed() {
     Subscriber.deleteMany({})
   ]);
 
-  const [admin, editor, author] = await User.create([
+  const [admin, editor, priya] = await User.create([
     {
       name: 'Amina Okonkwo',
       slug: 'amina-okonkwo',
