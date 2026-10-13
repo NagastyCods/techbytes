@@ -18,9 +18,19 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <p>© <%= new Date().getFullYear() %> <%= siteName %>. Built for readers first.</p>
+      <p>© <%= new Date().getFullYear() %> <%= siteName %>. Built for readers first. <button type="button" class="cookie-manage" data-cookie-manage>Cookies</button></p>
     </div>
   </footer>
+  <div class="cookie-banner" id="cookie-banner" hidden>
+    <div class="cookie-banner-inner">
+      <p><strong>Cookies.</strong> We store your choice in a cookie. If you accept, we also remember light or dark mode. Staff sign-in uses its own essential cookie. No ad trackers.</p>
+      <div class="cookie-banner-actions">
+        <button type="button" class="btn btn-accent" data-cookie-choice="all">Accept</button>
+        <button type="button" class="btn cookie-banner-ghost" data-cookie-choice="essential">Essential only</button>
+      </div>
+    </div>
+  </div>
+  <script src="/js/cookies.js" defer></script>
   <script src="/js/theme.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/search.js" defer></script>

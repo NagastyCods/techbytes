@@ -27,13 +27,20 @@
   <link rel="stylesheet" href="/css/main.css">
   <script>
     (function () {
-      try {
-        var saved = localStorage.getItem('tb-theme');
-        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
+      function cookie(name) {
+        var parts = document.cookie ? document.cookie.split('; ') : [];
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].indexOf(name + '=') === 0) return decodeURIComponent(parts[i].slice(name.length + 1));
+        }
+        return '';
       }
+      var theme = '';
+      if (cookie('tb_consent') === 'all') theme = cookie('tb_theme');
+      if (!theme) {
+        try { theme = localStorage.getItem('tb-theme') || ''; } catch (e) { theme = ''; }
+      }
+      if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
     })();
   </script>
   <% if (typeof jsonLd !== 'undefined') { %>

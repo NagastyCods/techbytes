@@ -679,6 +679,54 @@ a:hover { color: var(--accent); }
 .footer-links a { text-decoration: none; }
 .footer-bottom { margin-top: 1.5rem; color: var(--muted); font-size: 0.9rem; }
 
+.cookie-manage {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.cookie-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 0.75rem;
+}
+
+.cookie-banner[hidden] { display: none; }
+
+.cookie-banner-inner {
+  width: min(var(--max), 100%);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.15rem;
+  background: var(--bg-elev);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.cookie-banner p { margin: 0; max-width: 40rem; }
+
+.cookie-banner-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.cookie-banner-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
 .skeleton {
   background: linear-gradient(90deg, var(--line), var(--bg-elev), var(--line));
   background-size: 200% 100%;
