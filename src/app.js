@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const env = require('./config/env');
+const { connectDb } = require('./config/db');
 const { exposeLocals } = require('./middleware/locals');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 const { attachUser } = require('./middleware/auth');
@@ -15,7 +16,8 @@ const { htmlHeaders, noIndexAdmin } = require('./middleware/cacheHeaders');
 
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'));
+// Root /views so Vercel's Express builder includes the templates (it traces views/**).
+app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
 app.set('trust proxy', 1);
 
@@ -40,6 +42,15 @@ app.use(cors({ origin: env.siteUrl, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+// Serverless instances must connect per cold start and reuse the pool after that.
+app.use(async (req, res, next) => {
+  try {
+    await connectDb();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 app.use(attachUser);
 
 app.use(

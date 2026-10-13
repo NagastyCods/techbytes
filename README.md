@@ -52,39 +52,44 @@ Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
 - Robots: `/robots.txt` (blocks `/admin` and `/api/`)
 - Pages include canonical URLs, Open Graph, Twitter cards, and JSON-LD (`NewsArticle` on stories, `WebSite` + `SearchAction` on the homepage)
 
-## Deploy (Render or Railway + Atlas)
+## Deploy (Vercel + Atlas)
+
+Vercel detects `src/app.js` (it imports Express and exports the app) and runs it as one function. `npm start` is only for a long-running Node process (local, Render, Railway). Static files in `public/` are served from Vercel’s CDN. EJS templates live in `views/` so the Express builder includes them.
 
 ### MongoDB Atlas
 
 1. Create a cluster and a database user.
-2. **Network Access:** allow `0.0.0.0/0` (Render/Railway IPs change) or the host’s egress IPs.
+2. **Network Access:** allow `0.0.0.0/0`. Vercel’s egress IPs change.
 3. Copy the connection string. Add `/techbytes` (or your db name) before the `?` query string.
 4. Prefer the standard `mongodb://host1:27017,host2:27017,...` string if `+srv` DNS fails.
 
-### Render
+### Vercel
 
-1. Push this repo to GitHub.
-2. **New → Web Service**, connect the repo.
-3. Build: `npm install` · Start: `npm start`
-4. Environment:
-   - `NODE_ENV=production`
-   - `PORT` — Render sets this; you can omit it
+1. Push this repo to GitHub and import it at [vercel.com/new](https://vercel.com/new). Framework preset is Express (`vercel.json`).
+2. Environment variables:
    - `MONGODB_URI`
-   - `JWT_SECRET`
-   - `SITE_URL` — `https://your-service.onrender.com` (no trailing slash)
+   - `JWT_SECRET` — long random string (the dev fallback is rejected when `NODE_ENV=production`)
+   - `SITE_URL` — optional. Set it to your production origin with no trailing slash (`https://your-domain.com`). If you omit it, canonical URLs use the Vercel hostname.
    - SMTP vars if you want welcome emails
-5. After first deploy, open a **one-off shell** (or GitHub Action) and run `npm run seed` **once**. Do not seed production again unless you intend to wipe content.
+3. **Storage → Blob → Create.** Link the store to this project so image uploads receive `BLOB_READ_WRITE_TOKEN`. Without it, the public site still runs and cover fields still accept pasted image URLs; the admin upload button returns an error.
+4. Deploy. Seed once from your machine (the script refuses `NODE_ENV=production`, and it wipes TechBytes collections):
 
-**Uploads:** files in `public/uploads` live on the instance disk and **disappear on redeploy**. For real traffic, swap Multer for Cloudinary or S3 (notes are in `src/middleware/upload.js`).
+```bash
+npm run seed
+```
 
-### Railway
+Use the same `MONGODB_URI` in `.env` that the Vercel project uses.
 
-1. **New project → GitHub repo**.
-2. Set the same environment variables (`SITE_URL` = your Railway HTTPS URL).
-3. Start command: `npm start`.
-4. Attach a MongoDB plugin *or* keep using Atlas (`MONGODB_URI`).
+`trust proxy` is already enabled. JWT cookies use `secure: true` in production, so the site must be served over HTTPS (Vercel does this).
 
-`trust proxy` is already enabled so rate limits and secure cookies work behind Render/Railway. JWT cookies use `secure: true` when `NODE_ENV=production` — HTTPS is required.
+### Render or Railway
+
+1. Push this repo to GitHub and create a web service from it.
+2. Build: `npm install` · Start: `npm start`
+3. Same environment variables as above. `SITE_URL` should be the service HTTPS URL. `PORT` is set by the host.
+4. After the first deploy, run `npm run seed` once from a shell or from your machine. Do not seed again unless you intend to wipe content.
+
+**Uploads:** on Render or Railway, files in `public/uploads` live on the instance disk and disappear on redeploy. On Vercel they go to Blob instead.
 
 ## Project layout
 
@@ -92,7 +97,7 @@ Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
 src/models          Mongoose schemas
 src/controllers     Public + admin handlers
 src/routes          URL mapping
-src/views           EJS templates
+views/              EJS templates (project root so Vercel includes them)
 src/middleware      Auth, uploads, rate limits, cache headers
 public/             CSS, JS, local uploads
 scripts/seed.js     Demo data
@@ -100,7 +105,6 @@ scripts/seed.js     Demo data
 
 ## Future ideas
 
-- Cloudinary (or S3) for images so deploys don’t wipe covers
 - Confirm-link newsletter (double opt-in) and unsubscribe tokens
 - Redis-backed rate limits so they survive multiple instances
 - Full-text search with Atlas Search or Meilisearch instead of `$text`

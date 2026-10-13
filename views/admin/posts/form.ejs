@@ -27,7 +27,7 @@
       <div class="editor-toolbar">
         <label class="btn" for="inline-image">Upload image</label>
         <input id="inline-image" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-inline-upload>
-        <span class="hint">Inserts Markdown at the cursor. Files stay in /public/uploads (swap for Cloudinary later).</span>
+        <span class="hint">Inserts Markdown at the cursor. Files stay on local disk in development, and in Vercel Blob when deployed.</span>
       </div>
       <label for="content">Markdown</label>
       <textarea id="content" name="content" rows="22" required data-markdown><%= post.content %></textarea>
@@ -86,7 +86,7 @@
       <label class="btn" for="cover-file">Upload</label>
       <input id="cover-file" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-cover-upload>
     </div>
-    <p class="hint">Paste an Unsplash URL or upload to this server.</p>
+    <p class="hint">Paste an image URL, or upload a file.</p>
 
     <label class="check">
       <input type="checkbox" name="featured" <%= post.featured ? 'checked' : '' %>> Featured on homepage

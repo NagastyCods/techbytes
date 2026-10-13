@@ -3,15 +3,14 @@ const fs = require('fs');
 const multer = require('multer');
 
 /**
- * Local disk uploads (simple for development).
- * Later: swap this storage engine for Cloudinary (multer-storage-cloudinary)
- * and store the returned HTTPS URL on Post.coverImage / User.avatar instead
- * of a /uploads/... path. Render's filesystem is ephemeral, so Cloudinary
- * (or S3) is required in production if you care about images surviving deploys.
+ * Local disk in development. On Vercel the function filesystem is read-only
+ * (except /tmp, which is not public), so uploads go to Vercel Blob.
+ * Connect a Blob store on the project and Vercel injects BLOB_READ_WRITE_TOKEN.
  */
+const onVercel = process.env.VERCEL === '1';
 const uploadRoot = path.join(__dirname, '..', '..', 'public', 'uploads');
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination(req, file, cb) {
     const folder = path.join(uploadRoot, String(new Date().getFullYear()));
     fs.mkdirSync(folder, { recursive: true });
@@ -34,14 +33,36 @@ function fileFilter(req, file, cb) {
 }
 
 const upload = multer({
-  storage,
+  storage: onVercel ? multer.memoryStorage() : diskStorage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-function publicUploadPath(file) {
+function localPublicPath(file) {
   const year = path.basename(path.dirname(file.path));
   return `/uploads/${year}/${file.filename}`;
 }
 
-module.exports = { upload, publicUploadPath, uploadRoot };
+async function storedImageUrl(file) {
+  if (!onVercel) return localPublicPath(file);
+
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    const err = new Error(
+      'Image uploads on Vercel need a Blob store. In the Vercel project open Storage, create a Blob store, and redeploy. You can also paste an image URL.'
+    );
+    err.status = 503;
+    throw err;
+  }
+
+  const { put } = require('@vercel/blob');
+  const ext = path.extname(file.originalname || '').toLowerCase();
+  const safeExt = ['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext) ? ext : '';
+  const pathname = `uploads/${new Date().getFullYear()}/${Date.now()}-${Math.round(Math.random() * 1e9)}${safeExt}`;
+  const blob = await put(pathname, file.buffer, {
+    access: 'public',
+    contentType: file.mimetype
+  });
+  return blob.url;
+}
+
+module.exports = { upload, storedImageUrl, uploadRoot };

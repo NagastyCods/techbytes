@@ -1,5 +1,5 @@
 const { renderArticleHtml } = require('../../utils/markdown');
-const { upload, publicUploadPath } = require('../../middleware/upload');
+const { upload, storedImageUrl } = require('../../middleware/upload');
 
 async function preview(req, res, next) {
   try {
@@ -10,11 +10,16 @@ async function preview(req, res, next) {
   }
 }
 
-function uploadImage(req, res) {
-  if (!req.file) {
-    return res.status(400).json({ error: 'Choose an image first.' });
+async function uploadImage(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Choose an image first.' });
+    }
+    const url = await storedImageUrl(req.file);
+    res.json({ url });
+  } catch (err) {
+    next(err);
   }
-  res.json({ url: publicUploadPath(req.file) });
 }
 
 module.exports = {

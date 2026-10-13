@@ -12,22 +12,42 @@ function required(name) {
   return value;
 }
 
+function siteUrl() {
+  if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, '');
+  // Preview and production hostnames Vercel injects (no protocol).
+  if (process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return 'http://localhost:3000';
+}
+
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isProd = nodeEnv === 'production';
+
+function jwtSecret() {
+  const value = process.env.JWT_SECRET;
+  if (isProd && (!value || value === 'dev-only-change-me')) {
+    throw new Error('Set JWT_SECRET to a long random string before deploying.');
+  }
+  return value || 'dev-only-change-me';
+}
+
 const env = {
   port: Number(process.env.PORT) || 3000,
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
   mongoUri: required('MONGODB_URI'),
-  jwtSecret: process.env.JWT_SECRET || 'dev-only-change-me',
+  jwtSecret: jwtSecret(),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  siteUrl: (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  siteUrl: siteUrl(),
   siteName: process.env.SITE_NAME || 'TechBytes',
   siteTagline: process.env.SITE_TAGLINE || 'Tech news without the noise',
   smtpHost: process.env.SMTP_HOST || '',
   smtpPort: Number(process.env.SMTP_PORT) || 587,
   smtpUser: process.env.SMTP_USER || '',
   smtpPass: process.env.SMTP_PASS || '',
-  smtpFrom: process.env.SMTP_FROM || process.env.SITE_NAME || 'TechBytes'
+  smtpFrom: process.env.SMTP_FROM || process.env.SITE_NAME || 'TechBytes',
+  isProd
 };
-
-env.isProd = env.nodeEnv === 'production';
 
 module.exports = env;
