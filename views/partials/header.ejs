@@ -7,7 +7,7 @@
 
       <nav class="nav" id="site-nav" aria-label="Primary">
         <ul class="nav-list">
-          <% categories.forEach(function (cat) { %>
+          <% (typeof categories !== 'undefined' && categories ? categories : []).forEach(function (cat) { %>
             <li>
               <a class="<%= currentPath === '/category/' + cat.slug ? 'is-active' : '' %>" href="/category/<%= cat.slug %>"><%= cat.name %></a>
             </li>

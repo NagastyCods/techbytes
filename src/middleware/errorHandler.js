@@ -36,13 +36,37 @@ function errorHandler(err, req, res, next) {
   }
 
   console.error(err);
-  res.status(status).render('public/error', {
-    pageTitle: `Something went wrong · ${env.siteName}`,
-    metaDescription: 'An error occurred.',
-    message: env.isProd ? 'Please try again in a moment.' : err.message,
-    robots: 'noindex,follow',
-    status
-  });
+  // Database failures happen before nav categories are loaded. The layout
+  // must still render, or Express replaces this page with "Internal Server Error".
+  res.locals.siteName = res.locals.siteName || env.siteName;
+  res.locals.siteTagline = res.locals.siteTagline || env.siteTagline;
+  res.locals.siteUrl = res.locals.siteUrl || env.siteUrl;
+  res.locals.categories = res.locals.categories || [];
+  res.locals.currentPath = res.locals.currentPath || req.path;
+  res.locals.currentUser = res.locals.currentUser || null;
+  res.locals.rssUrl = res.locals.rssUrl || `${env.siteUrl}/rss.xml`;
+  res.locals.canonicalPath = res.locals.canonicalPath || req.path || '/';
+  res.locals.canonicalUrl = res.locals.canonicalUrl || '';
+  res.locals.ogImage = res.locals.ogImage || '';
+
+  res.status(status).render(
+    'public/error',
+    {
+      pageTitle: `Something went wrong · ${env.siteName}`,
+      metaDescription: 'An error occurred.',
+      message: env.isProd ? 'Please try again in a moment.' : err.message,
+      robots: 'noindex,follow',
+      status
+    },
+    (renderErr, html) => {
+      if (renderErr) {
+        console.error(renderErr);
+        res.status(status).type('text/plain').send(env.isProd ? 'Please try again in a moment.' : err.message);
+        return;
+      }
+      res.send(html);
+    }
+  );
 }
 
 module.exports = { notFound, errorHandler };

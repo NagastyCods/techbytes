@@ -7,7 +7,7 @@
       <nav aria-label="Footer">
         <p class="footer-heading">Sections</p>
         <ul class="footer-links">
-          <% categories.forEach(function (cat) { %>
+          <% (typeof categories !== 'undefined' && categories ? categories : []).forEach(function (cat) { %>
             <li><a href="/category/<%= cat.slug %>"><%= cat.name %></a></li>
           <% }) %>
         </ul>
