@@ -42,6 +42,13 @@ app.use(cors({ origin: env.siteUrl, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+// Static files must not wait on Mongo. A down database was turning /favicon.ico into a 500.
+app.use(
+  express.static(path.join(__dirname, '..', 'public'), {
+    maxAge: env.isProd ? '7d' : 0,
+    etag: true
+  })
+);
 // Serverless instances must connect per cold start and reuse the pool after that.
 app.use(async (req, res, next) => {
   try {
@@ -52,13 +59,6 @@ app.use(async (req, res, next) => {
   }
 });
 app.use(attachUser);
-
-app.use(
-  express.static(path.join(__dirname, '..', 'public'), {
-    maxAge: env.isProd ? '7d' : 0,
-    etag: true
-  })
-);
 
 app.use(exposeLocals);
 app.use(htmlHeaders);
