@@ -61,6 +61,7 @@ function errorHandler(err, req, res, next) {
   res.locals.categories = res.locals.categories || [];
   res.locals.currentPath = res.locals.currentPath || req.path;
   res.locals.currentUser = res.locals.currentUser || null;
+  res.locals.isStaff = res.locals.isStaff || false;
   res.locals.rssUrl = res.locals.rssUrl || `${env.siteUrl}/rss.xml`;
   res.locals.canonicalPath = res.locals.canonicalPath || req.path || '/';
   res.locals.canonicalUrl = res.locals.canonicalUrl || '';

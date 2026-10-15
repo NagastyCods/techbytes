@@ -1,6 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const { User } = require('../../models');
 const { signUserToken, setAuthCookie, clearAuthCookie } = require('../../utils/jwt');
+const { isStaff } = require('../../middleware/auth');
 
 const loginValidators = [
   body('email').trim().isEmail().withMessage('Enter a valid email.').normalizeEmail(),
@@ -8,7 +9,7 @@ const loginValidators = [
 ];
 
 function loginForm(req, res) {
-  if (req.user) {
+  if (isStaff(req.user)) {
     return res.redirect('/admin');
   }
   res.render('admin/login', {
@@ -31,7 +32,7 @@ async function login(req, res, next) {
 
     const email = String(req.body.email).toLowerCase();
     const user = await User.findOne({ email, isActive: true }).select('+passwordHash');
-    const ok = user && (await user.comparePassword(req.body.password));
+    const ok = user && isStaff(user) && (await user.comparePassword(req.body.password));
     if (!ok) {
       return res.status(401).render('admin/login', {
         pageTitle: 'Staff login',

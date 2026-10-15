@@ -5,7 +5,8 @@ const { publishDuePosts } = require('../utils/scheduling');
 const {
   canManageTaxonomy,
   canManageComments,
-  canManageUsers
+  canManageUsers,
+  isStaff
 } = require('./auth');
 
 /**
@@ -31,6 +32,7 @@ async function exposeLocals(req, res, next) {
     res.locals.robots = 'index,follow';
     res.locals.rssUrl = `${env.siteUrl}/rss.xml`;
     res.locals.newsletterStatus = req.query.newsletter || '';
+    res.locals.isStaff = isStaff(req.user);
     res.locals.canManageTaxonomy = canManageTaxonomy(req.user);
     res.locals.canManageComments = canManageComments(req.user);
     res.locals.canManageUsers = canManageUsers(req.user);

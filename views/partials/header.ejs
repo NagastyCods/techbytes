@@ -31,10 +31,8 @@
         <span class="theme-toggle-moon" aria-hidden="true">☾</span>
       </button>
 
-      <% if (currentUser) { %>
+      <% if (typeof isStaff !== 'undefined' && isStaff) { %>
         <a class="staff-link" href="/admin">Dashboard</a>
-      <% } else { %>
-        <a class="staff-link" href="/admin/login">Staff</a>
       <% } %>
 
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>

@@ -8,7 +8,7 @@ const tagAdminController = require('../controllers/admin/tagAdminController');
 const userAdminController = require('../controllers/admin/userAdminController');
 const commentAdminController = require('../controllers/admin/commentAdminController');
 const mediaController = require('../controllers/admin/mediaController');
-const { requireAuth, requireRole } = require('../middleware/auth');
+const { requireAuth, requireStaff, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.get('/login', authController.loginForm);
 router.post('/login', loginLimiter, authController.loginValidators, authController.login);
 router.post('/logout', requireAuth, authController.logout);
 
-router.use(requireAuth);
+router.use(requireStaff);
 
 router.get('/', dashboardController.dashboard);
 

@@ -1,6 +1,12 @@
 const { User } = require('../models');
 const { COOKIE_NAME, verifyUserToken } = require('../utils/jwt');
 
+const STAFF_ROLES = ['admin', 'editor', 'author'];
+
+function isStaff(user) {
+  return Boolean(user && STAFF_ROLES.includes(user.role));
+}
+
 function redirectToLogin(req, res) {
   const next = encodeURIComponent(req.originalUrl);
   res.redirect(`/admin/login?next=${next}`);
@@ -29,6 +35,13 @@ async function attachUser(req, res, next) {
 
 function requireAuth(req, res, next) {
   if (!req.user) {
+    return redirectToLogin(req, res);
+  }
+  next();
+}
+
+function requireStaff(req, res, next) {
+  if (!isStaff(req.user)) {
     return redirectToLogin(req, res);
   }
   next();
@@ -70,6 +83,8 @@ function canEditPost(user, post) {
 module.exports = {
   attachUser,
   requireAuth,
+  requireStaff,
+  isStaff,
   requireRole,
   canManageTaxonomy,
   canManageComments,
